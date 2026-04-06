@@ -1,0 +1,44 @@
+name: CD - Deploy ML Pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/pipeline/**"
+      - "src/training/**"
+      - "src/data/**"
+      - "src/evaluation/**"
+
+jobs:
+  deploy-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.SA_EMAIL }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile pipeline
+        run: python scripts/run_pipeline.py compile
+
+      - name: Upload pipeline to GCS
+        run: |
+          gsutil cp pipeline.yaml gs://${{ secrets.ARTIFACTS_BUCKET }}/pipelines/
+
+      - name: Trigger pipeline run
+        run: python scripts/run_pipeline.py run --project=${{ secrets.PROJECT_ID }}
