@@ -1,4 +1,4 @@
-# MLOps Pipeline on GCP — Customer Churn Prediction
+# MLOps Pipeline on GCP : Customer Churn Prediction
 
 A production-grade **MLOps Level 2** pipeline for customer churn prediction, built on Google Cloud Platform. This project implements a fully automated ML lifecycle: data ingestion, training, evaluation, deployment, monitoring, and retraining.
 
