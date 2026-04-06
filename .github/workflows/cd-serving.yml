@@ -1,6 +1,7 @@
 name: CD - Deploy Serving API
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
@@ -9,6 +10,7 @@ on:
 jobs:
   deploy-serving:
     runs-on: ubuntu-latest
+    if: ${{ vars.GCP_ENABLED == 'true' }}
     permissions:
       contents: read
       id-token: write
